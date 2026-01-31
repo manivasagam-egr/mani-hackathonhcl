@@ -1,4 +1,4 @@
-name: CD Deploy to GKE
+name: CD Deploy Order Service to GKE
 
 on:
   push:
@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Checkout Repo
       uses: actions/checkout@v4
 
@@ -18,14 +19,15 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v2
-
     - name: Get GKE Credentials
-      run: |
-        gcloud container clusters get-credentials hackathon-cluster \
-          --zone us-central1-a
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: hackathon-cluster
+        location: us-central1-a
 
-    - name: Deploy Kubernetes Manifests
+    - name: Deploy Order Service
       run: |
         kubectl apply -f k8s/deployment/deployment-order-service.yaml
+
+    - name: Verify Pods
+      run: kubectl get pods
