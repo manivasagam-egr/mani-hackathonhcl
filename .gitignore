@@ -2,3 +2,9 @@
 .class*
 .jar
 .ear
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+*.tfvars
