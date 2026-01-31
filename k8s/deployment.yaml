@@ -1,0 +1,89 @@
+# Deployment: node-service-1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-service-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node-service-1
+  template:
+    metadata:
+      labels:
+        app: node-service-1
+    spec:
+      containers:
+        - name: node-service-1
+          image: us-central1-docker.pkg.dev/mani-hackathon/hackathon-repo/node-service-1:latest
+          ports:
+            - containerPort: 3001
+          env:
+            - name: NODE_ENV
+              value: "production"
+
+          # ✅ ADD THIS BLOCK
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# Deployment: node-service-2
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-service-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node-service-2
+  template:
+    metadata:
+      labels:
+        app: node-service-2
+    spec:
+      containers:
+        - name: node-service-2
+          image: us-central1-docker.pkg.dev/mani-hackathon/hackathon-repo/node-service-2:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: NODE_ENV
+              value: "production"
+
+          # ✅ ADD THIS BLOCK
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# Deployment: java-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: us-central1-docker.pkg.dev/mani-hackathon/hackathon-repo/order-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
