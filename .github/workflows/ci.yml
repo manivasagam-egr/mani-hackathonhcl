@@ -9,8 +9,12 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      REGION: us-central1
+      REPO_NAME: hackathon-repo
+
     steps:
-      # Step 1: Checkout code
+      # Step 1: Checkout Code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -20,21 +24,66 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # Step 3: Setup gcloud
-      - name: Setup gcloud SDK
+      # Step 3: Setup gcloud SDK
+      - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
 
       # Step 4: Configure Docker for Artifact Registry
-      - name: Configure Docker
+      - name: Configure Docker Authentication
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
-      # Step 5: Build Docker Image
-      - name: Build Docker Image
+      # -------------------------------
+      # ✅ Build & Push Java Order Service
+      # -------------------------------
+      - name: Build & Push Order Service Image
         run: |
-          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/hackathon-repo/order-service:latest ./order-service
+          IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPO_NAME/order-service"
 
-      # Step 6: Push Docker Image
-      - name: Push Docker Image
+          echo "Building Order Service..."
+          docker build -t $IMAGE:latest ./order-service
+
+          echo "Tagging with Commit SHA..."
+          docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
+
+          echo "Pushing Images..."
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
+
+      # -------------------------------
+      # ✅ Build & Push Node Patient Service
+      # -------------------------------
+      - name: Build & Push Patient Service Image
         run: |
-          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/hackathon-repo/order-service:latest
+          IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPO_NAME/patient-service"
+
+          echo "Building Patient Service..."
+          docker build -t $IMAGE:latest ./patient-service
+
+          echo "Tagging with Commit SHA..."
+          docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
+
+          echo "Pushing Images..."
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
+
+      # -------------------------------
+      # ✅ Build & Push Node Appointment Service
+      # -------------------------------
+      - name: Build & Push Appointment Service Image
+        run: |
+          IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPO_NAME/appointment-service"
+
+          echo "Building Appointment Service..."
+          docker build -t $IMAGE:latest ./appointment-service
+
+          echo "Tagging with Commit SHA..."
+          docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
+
+          echo "Pushing Images..."
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
+
+      # ✅ Final Success Message
+      - name: CI Completed Successfully
+        run: echo "All Microservices Built & Pushed to Artifact Registry ✅"
