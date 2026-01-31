@@ -51,23 +51,6 @@ jobs:
           docker push $IMAGE:latest
           docker push $IMAGE:${{ github.sha }}
 
-      # -------------------------------
-      # ✅ Build & Push Node Patient Service
-      # -------------------------------
-      - name: Build & Push Patient Service Image
-        run: |
-          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/patient-service"          
-          echo "Building Patient Service..."
-          docker build -t $IMAGE:latest ./patient-service
-
-          echo "Tagging with Commit SHA..."
-          docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
-
-          echo "Pushing Images..."
-          docker push $IMAGE:latest
-          docker push $IMAGE:${{ github.sha }}
-
-      # -------------------------------
       # ✅ Build & Push Node Appointment Service
       # -------------------------------
       - name: Build & Push Appointment Service Image
