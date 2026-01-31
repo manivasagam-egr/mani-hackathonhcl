@@ -1,0 +1,43 @@
+name: Terraform
+on:
+  push:
+    paths:
+      - 'terraform/**'
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+          
+      - name: Setup GCP credentials
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init -input=false
+
+      - name: Terraform Format
+        run: terraform fmt -check
+        working-directory: terraform
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: terraform
+
+
+- name: Terraform Apply
+if: github.ref == 'refs/heads/main'
+run: terraform apply -input=false tfplan
+working-directory: terraform
