@@ -51,22 +51,6 @@ jobs:
           docker push $IMAGE:latest
           docker push $IMAGE:${{ github.sha }}
 
-      # ✅ Build & Push Node Appointment Service
-      # -------------------------------
-      - name: Build & Push Appointment Service Image
-        run: |
-          IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPO_NAME/appointment-service"
-          IMAGE="$REGION-docker.pkg.dev/mani-hackathon/$REPO_NAME/appointment-service"
-
-          echo "Building Appointment Service..."
-          docker build -t $IMAGE:latest ./appointment-service
-
-          echo "Tagging with Commit SHA..."
-          docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
-
-          echo "Pushing Images..."
-          docker push $IMAGE:latest
-          docker push $IMAGE:${{ github.sha }}
 
       # ✅ Final Success Message
       - name: CI Completed Successfully
