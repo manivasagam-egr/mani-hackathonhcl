@@ -28,4 +28,4 @@ jobs:
 
     - name: Deploy Kubernetes Manifests
       run: |
-        kubectl apply -f k8s/
+        kubectl apply -f k8s/deployment/deployment-order-service.yaml
