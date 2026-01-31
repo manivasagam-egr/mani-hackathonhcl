@@ -74,6 +74,6 @@ const express = require('express');
       }
     });
     
-    app.listen(port, '0.0.0.0', () => {
+    app.listen(3001, '0.0.0.0', () => {
       console.log(`Appointment service listening at http://0.0.0.0:${port}`);
     });
