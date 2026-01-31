@@ -39,6 +39,7 @@ jobs:
       - name: Build & Push Order Service Image
         run: |
           IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPO_NAME/order-service"
+          IMAGE="$REGION-docker.pkg.dev/mani-hackathon/$REPO_NAME/order-service"
 
           echo "Building Order Service..."
           docker build -t $IMAGE:latest ./order-service
