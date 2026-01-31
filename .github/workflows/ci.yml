@@ -56,9 +56,7 @@ jobs:
       # -------------------------------
       - name: Build & Push Patient Service Image
         run: |
-          IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/$REPO_NAME/patient-service"
-          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/patient-service"
-          
+          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/patient-service"          
           echo "Building Patient Service..."
           docker build -t $IMAGE:latest ./patient-service
 
