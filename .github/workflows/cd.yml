@@ -1,0 +1,31 @@
+name: CD Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Google Auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Get GKE Credentials
+      run: |
+        gcloud container clusters get-credentials hackathon-cluster \
+          --zone us-central1-a
+
+    - name: Deploy Kubernetes Manifests
+      run: |
+        kubectl apply -f k8s/
